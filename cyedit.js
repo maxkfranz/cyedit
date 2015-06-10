@@ -50,6 +50,14 @@ if (Meteor.isServer) {
   Meteor.startup(function () {
     // Meteor.call("destroyCyData"); // reset all nodes on startup
   });
+
+  Meteor.publish('edges', function() {
+    return Edges.find();
+  });
+
+  Meteor.publish('nodes', function() {
+    return Nodes.find();
+  });
 }
 
 
