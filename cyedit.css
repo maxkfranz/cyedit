@@ -15,3 +15,11 @@
   margin: 0.5em;
   z-index: 9999;
 }
+
+#init {
+  position: absolute;
+  right: 0;
+  top: 30px;
+  margin: 0.5em;
+  z-index: 9999;
+}

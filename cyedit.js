@@ -39,10 +39,16 @@ if( Meteor.isClient ){
     
     initCy();
 
-    // add random nodes 
     $('#add').on('click', function(){
+      Meteor.call("addNode");
+    });
+
+    // add random nodes 
+    $('#init').on('click', function(){
+      Meteor.call("destroyCyData");
       Meteor.call("initCyData");
     });
+
   });
 }
 
