@@ -14,6 +14,11 @@ function initCy(){
     cy.add( Edges.find().fetch() );
 
     cy.reset()
+
+    cy.nodes().qtip({
+          content:  function(){ return this.data('id'); }
+    })
+
   });
 
   cy.on('drag', 'node', /*_.debounce(*/function( e ){
@@ -27,13 +32,15 @@ function initCy(){
       $set: { position: node.position() }
     });
   }/*, 100)*/);
+
 }
 
 if( Meteor.isClient ){
 
   Meteor.subscribe('nodes');
   Meteor.subscribe('edges');
-  
+
+
   $(function(){
     FastClick.attach( document.body );
     
@@ -48,6 +55,8 @@ if( Meteor.isClient ){
       Meteor.call("destroyCyData");
       Meteor.call("initCyData");
     });
+
+
 
   });
 }
