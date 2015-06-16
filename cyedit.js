@@ -1,11 +1,59 @@
 var Nodes = new Mongo.Collection("nodes");
 var Edges = new Meteor.Collection("edges");
 
+
 function initCy(){
 
   cy = cytoscape({
-    container: document.getElementById('cy')
+    container: document.getElementById('cy'),
+    ready: function(){
+      console.log("network ready");
+    },
+    style: [
+            {
+              selector: 'node',
+              css: {
+                'content': 'data(id)'
+              }
+            },
+            {
+              selector: 'edge',
+              css: {
+                'target-arrow-shape': 'triangle'
+              }
+            },
+            // some style for the ext
+            {
+              selector: '.edgehandles-hover',
+              css: {
+                'background-color': 'red'
+              }
+            },
+            {
+              selector: '.edgehandles-source',
+              css: {
+                'border-width': 2,
+                'border-color': 'red'
+              }
+            },
+            {
+              selector: '.edgehandles-target',
+              css: {
+                'border-width': 2,
+                'border-color': 'red'
+              }
+            },
+            {
+              selector: '.edgehandles-preview, .edgehandles-ghost-edge',
+              css: {
+                'line-color': 'red',
+                'target-arrow-color': 'red',
+                'source-arrow-color': 'red'
+              }
+            }
+          ]
   });
+
 
   Tracker.autorun(function(){
     cy.elements().remove();
@@ -15,9 +63,66 @@ function initCy(){
 
     cy.reset()
 
+    // qtip
     cy.nodes().qtip({
           content:  function(){ return this.data('id'); }
     })
+
+    // edgehandles
+    // cy.edgehandles();
+
+    // menu
+  /*
+    cy.cxtmenu({
+        selector: 'node',
+        commands: [
+          {
+            content: '<span class="fa fa-flash fa-2x"></span>',
+            select: function(){
+              console.log( this.id() );
+            }
+          },
+          {
+            content: '<span class="fa fa-star fa-2x"></span>',
+            select: function(){
+              console.log( this.data('name') );
+            }
+          },
+          {
+            content: 'Text',
+            select: function(){
+              console.log( this.position() );
+            }
+          }
+        ]
+      });
+
+  
+  
+    cy.cxtmenu({
+      selector: 'core',
+      commands: [
+        {
+          content: 'option 1',
+          select: function(){
+            console.log( 'bg1' );
+          }
+        },
+        {
+          content: 'option 2',
+          select: function(){
+            console.log( 'bg2' );
+          }
+        },
+        {
+          content: 'option 3',
+          select: function(){
+            console.log( 'bg1' );
+          }
+        }
+      ]
+    });
+*/
 
   });
 
@@ -46,6 +151,7 @@ if( Meteor.isClient ){
     
     initCy();
 
+
     $('#add').on('click', function(){
       Meteor.call("addNode");
     });
@@ -56,7 +162,13 @@ if( Meteor.isClient ){
       Meteor.call("initCyData");
     });
 
+      $('#draw-on').on('click', function(){
+          cy.edgehandles('drawon');
+    });
 
+    $('#draw-off').on('click', function(){
+      cy.edgehandles('drawoff');
+    });
 
   });
 }
