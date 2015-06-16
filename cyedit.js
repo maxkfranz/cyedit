@@ -68,11 +68,7 @@ function initCy(){
           content:  function(){ return this.data('id'); }
     })
 
-    // edgehandles
-    // cy.edgehandles();
-
     // menu
-  /*
     cy.cxtmenu({
         selector: 'node',
         commands: [
@@ -97,32 +93,8 @@ function initCy(){
         ]
       });
 
-  
-  
-    cy.cxtmenu({
-      selector: 'core',
-      commands: [
-        {
-          content: 'option 1',
-          select: function(){
-            console.log( 'bg1' );
-          }
-        },
-        {
-          content: 'option 2',
-          select: function(){
-            console.log( 'bg2' );
-          }
-        },
-        {
-          content: 'option 3',
-          select: function(){
-            console.log( 'bg1' );
-          }
-        }
-      ]
-    });
-*/
+    // edgehandles
+    // cy.edgehandles();
 
   });
 
