@@ -9,12 +9,20 @@ function initCy(){
     ready: function(){
       console.log("network ready");
     },
-    style: [
-            {
-              selector: 'node',
-              css: {
-                'content': 'data(id)'
-              }
+    style: [ {
+              selector : 'node',
+                   css: {
+                    'font-size': 12,
+                    'content': 'data(id)',
+                    'text-valign': 'center',
+                    'color': 'white',
+                    'text-outline-width': 2,
+                    'text-outline-color': '#888',
+                    'min-zoomed-font-size': 8
+                    // ,
+                    // 'width': 'mapData(score, 0, 1, 20, 50)',
+                    // 'height': 'mapData(score, 0, 1, 20, 50)'
+                  }
             },
             {
               selector: 'edge',
@@ -93,8 +101,8 @@ function initCy(){
         ]
       });
 
-    // edgehandles
-    // cy.edgehandles();
+        // edgehandles
+        // cy.edgehandles({});
 
   });
 
@@ -123,7 +131,6 @@ if( Meteor.isClient ){
     
     initCy();
 
-
     $('#add').on('click', function(){
       Meteor.call("addNode");
     });
@@ -132,6 +139,31 @@ if( Meteor.isClient ){
     $('#init').on('click', function(){
       Meteor.call("destroyCyData");
       Meteor.call("initCyData");
+    });
+
+      $('#colaLayout').on('click', function(){
+        var layout = cy.makeLayout({ name: 'cola' });
+        layout.run();
+    }); 
+
+      $('#arborLayout').on('click', function(){
+        var layout = cy.makeLayout({ name: 'arbor' });
+        layout.run();
+    });
+
+      $('#randomLayout').on('click', function(){
+        var layout = cy.makeLayout({ name: 'random' });
+        layout.run();
+    });
+
+      $('#circleLayout').on('click', function(){
+        var layout = cy.makeLayout({ name: 'circle' });
+        layout.run();
+    });
+
+      $('#gridLayout').on('click', function(){
+        var layout = cy.makeLayout({ name: 'grid' });
+        layout.run();
     });
 
       $('#draw-on').on('click', function(){
@@ -183,7 +215,6 @@ Meteor.methods({
           });
     },
     deleteNode: function (nodeId) {
-      
         var node = Nodes.findOne(nodeId);
         Nodes.remove(nodeId);
     },
