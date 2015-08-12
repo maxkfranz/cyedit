@@ -1,5 +1,10 @@
 <template name="infobox">
-    <h3>Info {{currentSelection.data.name}}</h3>
+
+    <!-- <p id="textArea" class="editable" data-type="textarea" data-placeholder="Name" data-emptytext="Click to enter text" data-rows="4">{{ currentSelection.data.name}}</p> -->
+
+    {{> xEditable type="text" value=currentSelection.data.name success=onSuccess placement="right" defaultValue="Name"}}
+
+
     <ul>
         <li>{{ currentSelection._id }}</li>
         <li>{{ currentSelection.data.id }}</li>

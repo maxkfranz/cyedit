@@ -1,24 +1,50 @@
 Template.infobox.helpers({
+
+    onSuccess: function () {
+        return function (res, val) {
+            Meteor.call("updateNameByType", Session.get('currentId'), Session.get('currentType'), val);
+        }
+    },
+
+    // nameOptions: function () {
+    //         item = { data: {}};
+        
+    //     if( type == "node") {
+    //             item= Nodes.findOne({"data.id" : id});
+    //         } else if (type== "edge"){
+    //             item= Edges.findOne({"data.id" : id});
+    //     }
+
+    //     return {
+    //         type: 'text',
+    //         async: true,
+    //         position: 'top',
+    //         value: item.data.name,
+    //         onsubmit: function (val, cb) {
+                
+    //         }
+    //     };
+    // },
+
      currentSelection: function() {
+        var id= Session.get('currentId'),
+            type = Session.get('currentType'),
+            item = {};
 
-        var current = [];
-        var id = Session.get('currentId');
 
-        if(Session.get('currentType') == "node") {
-            current= Nodes.findOne({"data.id" : id});
-        } else if (Session.get('currentType') == "edge"){
-            current= Edges.findOne({"data.id" : id});
-        } 
+       if( type == "node") {
+            item= Nodes.findOne({"data.id" : id});
+        } else if (type== "edge"){
+            item= Edges.findOne({"data.id" : id});
+        }
 
-        return current;
+        return item;
     }
 })
 
 Template.comments.helpers({
     comments: function() {
-        var comments = Comments.find({"id" : Session.get('currentId'),  "type" : Session.get('currentType')}).fetch();
-        console.log(comments);
-        return comments;
+        return comments = Comments.find({"id" : Session.get('currentId'),  "type" : Session.get('currentType')}).fetch();
     }
 })
 
