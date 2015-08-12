@@ -1,4 +1,4 @@
-var net;
+net="";
 
 if( Meteor.isClient ){
 
@@ -6,22 +6,17 @@ if( Meteor.isClient ){
     Template.network.rendered = function () {
         
         net = initNetwork();
-        
-       // updateNetworkData(net);
 
-        net.edgehandles();
-
-        // addQTip(net);
-        // addCxtMenu(net);
-        // // addEdgehandles(net);
-        // addDrag(net)
-
+        addQTip(net);
+        addCxtMenu(net);
+        // addEdgehandles(net);
+        addDrag(net)
 
         Tracker.autorun(function(){
             updateNetworkData(net);
-
         });
     };
+
 }
 
 if (Meteor.isServer) {
