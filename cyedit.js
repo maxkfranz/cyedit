@@ -156,6 +156,7 @@ function addDrag (net) {
         var node = e.cyTarget;
         Session.set('currentType', "node");
         Session.set('currentId', node.id());
+        $("#infoBox").css('visibility', 'visible');
     });
 
     net.on('drag', 'node', /*_.debounce(*/function( e ){

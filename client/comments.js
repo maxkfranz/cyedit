@@ -1,3 +1,12 @@
+Template.contextual.events= {
+
+    'click #closeInfoBox' : function(event){
+        // console.log('close infoBox');
+        $("#infoBox").css('visibility', 'hidden');
+    }
+
+};
+
 Template.infobox.helpers({
 
     onSuccess: function () {
@@ -5,26 +14,6 @@ Template.infobox.helpers({
             Meteor.call("updateNameByType", Session.get('currentId'), Session.get('currentType'), val);
         }
     },
-
-    // nameOptions: function () {
-    //         item = { data: {}};
-        
-    //     if( type == "node") {
-    //             item= Nodes.findOne({"data.id" : id});
-    //         } else if (type== "edge"){
-    //             item= Edges.findOne({"data.id" : id});
-    //     }
-
-    //     return {
-    //         type: 'text',
-    //         async: true,
-    //         position: 'top',
-    //         value: item.data.name,
-    //         onsubmit: function (val, cb) {
-                
-    //         }
-    //     };
-    // },
 
      currentSelection: function() {
         var id= Session.get('currentId'),
