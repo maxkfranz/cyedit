@@ -13,3 +13,5 @@ fastclick
 maxkfranz:cytoscape-qtip
 twbs:bootstrap
 fortawesome:fontawesome
+stevezhu:lodash
+d3js:d3

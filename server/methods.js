@@ -1,11 +1,23 @@
 Meteor.methods({
 
+    addComment : function(id, type, text) {
+        Comments.insert({
+          "id": id,
+          "type": type,
+          "body": text
+        });
+    },
+
     addNode: function () {
+        console.log(getRandomWord());
+        
         Nodes.insert({
           group: 'nodes',
           data: {
             id: 'node' + Math.round( Math.random() * 1000000 ),
-            starred : false
+            starred : false,
+            group : _.random(0,5), // add group
+            name : getRandomWord()
           },
           position: {
             x: Math.random() *800,
@@ -35,6 +47,10 @@ Meteor.methods({
         // console.log(node);
         Nodes.remove(node);
     },
+
+    // selectNode: function (nodeId) {
+    //     var node = Nodes.findOne({ "data.id" : nodeId });
+    // },
 
     updateNodePosition : function(nodeId, position){
         var node = Nodes.findOne({ "data.id" : nodeId });

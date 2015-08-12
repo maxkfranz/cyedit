@@ -5,3 +5,7 @@ Meteor.publish('edges', function() {
 Meteor.publish('nodes', function() {
     return Nodes.find();
 });
+
+Meteor.publish('comments', function() {
+    return Comments.find();
+});

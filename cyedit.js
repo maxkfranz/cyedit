@@ -1,6 +1,9 @@
 net="";
 
+
 if( Meteor.isClient ){
+
+    // Session.setDefault('currentNode', null)
 
     // make sure the div is ready
     Template.network.rendered = function () {
@@ -10,13 +13,12 @@ if( Meteor.isClient ){
         addQTip(net);
         addCxtMenu(net);
         // addEdgehandles(net);
-        addDrag(net)
+        addDrag(net);
 
         Tracker.autorun(function(){
             updateNetworkData(net);
         });
     };
-
 }
 
 if (Meteor.isServer) {
@@ -27,6 +29,8 @@ if (Meteor.isServer) {
 
 function initNetwork () {
 
+    var colors = d3.scale.category20b();
+
     return cytoscape({
             container: document.getElementById('cy'),
             ready: function(){
@@ -36,9 +40,9 @@ function initNetwork () {
             style: cytoscape.stylesheet()
             .selector('node')
                 .style({
-                        'background-color': function( e ){ return e.data("starred") ?  "yellow" : "#555" },
+                        'background-color': function( e ){ return e.data("starred") ?  "yellow" : colors(e.data("group")) },
                         'font-size': 12,
-                        'content': function( e ){ return e.data("id")},
+                        'content': function( e ){  return e.data("name")},
                         'text-valign': 'center',
                         'color': 'white',
                         'text-outline-width': 2,
@@ -74,6 +78,8 @@ function updateNetworkData(net) {
         var edges = Edges.find().fetch();
         var nodes = Nodes.find().fetch();
         // console.log("edges : ", edges.length, "nodes : ", nodes.length);
+        
+        // console.log(nodes);
 
         net.elements().remove(); // make sure evything is clean
         net.add( nodes );
@@ -125,7 +131,14 @@ function addCxtMenu (net){
             select: function(){
               // console.log( this.position() );
               Meteor.call("lockNode", this.id(), this.position());
-            }
+            },
+          },
+          {
+            content:'<span class="fa fa-comments-o fa-2x"></span>',
+            select: function(){
+              Meteor.call("addComment", this.id());
+            },
+            
           }
         ]
       });
@@ -138,13 +151,25 @@ function addCxtMenu (net){
 
 // drag behaviour
 function addDrag (net) {
+
+    net.on('grab', 'node', /*_.debounce(*/function( e ){
+        var node = e.cyTarget;
+        Session.set('currentType', "node");
+        Session.set('currentId', node.id());
+    });
+
     net.on('drag', 'node', /*_.debounce(*/function( e ){
         var node = e.cyTarget;
         Meteor.call('updateNodePosition', node.id(), node.position());
     })
 }
 
-
+// function addClick (net) {
+//     net.on('click', 'node', /*_.debounce(*/function( e ){
+//         var node = e.cyTarget;
+//         Meteor.call('selectNode', node.id());
+//     })
+// }
 
 
 
