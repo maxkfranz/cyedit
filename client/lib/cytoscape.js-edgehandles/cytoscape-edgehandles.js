@@ -50,7 +50,8 @@
     
     $.fn.cytoscapeEdgehandles = function( params ){
       var fn = params;
-      
+
+
       var functions = {
         destroy: function(){
           var $container = $(this);
@@ -525,6 +526,7 @@
             }
           }
 
+          console.log($container.cytoscape);
           $container.cytoscape(function(e){
             cy = this;
             
@@ -1011,7 +1013,6 @@
 
     $$('core', 'edgehandles', function( options ){
       var cy = this;
-
       return $( cy.container() ).cytoscapeEdgehandles( options );
     });
 
