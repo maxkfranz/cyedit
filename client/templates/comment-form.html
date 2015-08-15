@@ -1,13 +1,14 @@
 <template name="commentForm">
-  
   <form>
     <div class="form-group">
-        <label class="control-label">Your comment:
-          <textarea class="form-control" id="body"></textarea>
-        </label>
+          <textarea  placeholder="Write your message here..."  class="form-control" id="body"></textarea>
     </div>
     <div class="form-group">
-        <input class="btn btn-default" type="submit" value="Submit" id="submit"/>
+        <span class="input-group-btn" onclick="addComment()">     
+            <button class="btn btn-primary btn-sm" type="submit"  id="submit">
+              Add Comment <span class="fa fa-comment"></span> 
+            </button>
+        </span>
     </div>
   </form>
 </template>

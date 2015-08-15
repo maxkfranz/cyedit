@@ -1,5 +1,4 @@
-net="";
-
+net=""; // main object to store a cytoscape graph 
 
 if( Meteor.isClient ){
 
@@ -17,7 +16,6 @@ if( Meteor.isClient ){
 
         Tracker.autorun(function(){
             updateNetworkData(net);
-
         });
     };
 }
@@ -36,14 +34,15 @@ function initNetwork () {
             container: document.getElementById('cy'),
             ready: function(){
               console.log("network ready");
+              updateNetworkData(net); // load data when cy is ready
             },
             // style
             style: cytoscape.stylesheet()
             .selector('node')
                 .style({
+                        'content': function( e ){  return e.data("name")},
                         'background-color': function( e ){ return e.data("starred") ?  "yellow" : colors(e.data("group")) },
                         'font-size': 12,
-                        'content': function( e ){  return e.data("name")},
                         'text-valign': 'center',
                         'color': 'white',
                         'text-outline-width': 2,
@@ -54,8 +53,8 @@ function initNetwork () {
                 })
             .selector('edge')
                 .style({
-                    'content': function( e ){ return e.data("id")},
-                    'target-arrow-shape': 'triangle'
+                    'content': function( e ){ return e.data("name")? e.data("name") : "";},
+                    'target-arrow-shape': 'triangle',
                 })
             .selector('.edgehandles-hover')
                 .style({
@@ -78,9 +77,6 @@ function updateNetworkData(net) {
         // init Data
         var edges = Edges.find().fetch();
         var nodes = Nodes.find().fetch();
-        // console.log("edges : ", edges.length, "nodes : ", nodes.length);
-        
-        // console.log(nodes);
 
         net.elements().remove(); // make sure evything is clean
         net.add( nodes );
@@ -156,16 +152,23 @@ function addEdgehandles(net) {
     net.edgehandles({
         complete : onComplete
     });
-
 };
 
 // drag behaviour
 function addDrag (net) {
 
-    net.on('grab', 'node', /*_.debounce(*/function( e ){
+    net.on('select', 'node', /*_.debounce(*/function( e ){
         var node = e.cyTarget;
         Session.set('currentType', "node");
         Session.set('currentId', node.id());
+        $("#infoBox").css('visibility', 'visible');
+    });
+
+    net.on('select', 'edge', /*_.debounce(*/function( e ){
+        var edge = e.cyTarget;
+        console.log(edge);
+        Session.set('currentType', "edge");
+        Session.set('currentId', edge.id());
         $("#infoBox").css('visibility', 'visible');
     });
 

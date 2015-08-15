@@ -1,3 +1,20 @@
+function changeLayout (layoutName) {
+
+    // TODO : make this function smoother maybe
+    var savePositions = function () {
+      for (var i = 0; i < net.nodes().length; i++) {
+            var node = net.nodes()[i];
+            Meteor.call("updateNodePosition", node.id(), node.position())
+        }
+    }
+
+    var layout = net.makeLayout({ 
+        name: layoutName,
+        stop: savePositions // callback on layoutstop
+    });
+    layout.run();
+}
+
 Template._header.events = {
     // add/remove nodes
     "click #add" :  function(){
@@ -11,34 +28,13 @@ Template._header.events = {
     },
 
     // layouts
-    // TODO : make a function that saves positions to the db after layout has been applied
-    'click #colaLayout' : function(){
-      console.log("click");
-        var layout = net.makeLayout({ name: 'cola' });
-        layout.run();
-    },
+    'click #colaLayout' : function(){ changeLayout("cola") },
+    'click #arborLayout' : function(){ changeLayout("cola") },
+    'click #randomLayout' : function(){ changeLayout("random") },
+    'click #circleLayout' : function(){ changeLayout("circle") },
+    'click #gridLayout' : function(){ changeLayout("grid") },
 
-    'click #arborLayout' : function(){
-        var layout = net.makeLayout({ name: 'arbor' });
-        layout.run();
-    },
-
-    'click #randomLayout' : function(){
-        var layout = net.makeLayout({ name: 'random' });
-        layout.run();
-    },
-
-    'click #circleLayout' : function(){
-        var layout = net.makeLayout({ name: 'circle' });
-        layout.run();
-    },
-
-    'click #gridLayout' : function(){
-        var layout = net.makeLayout({ name: 'grid' });
-        layout.run();
-    },
-
-    // add remove edges
+    // toggle add/remove edges feature
     'click #draw-edgehandles' : function(){
 
         // var edgeHandlesOn = Session.get('edgeHandlesOn') == "drawoff" ? "drawon" : "drawoff";
