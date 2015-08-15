@@ -34,16 +34,15 @@ Meteor.methods({
 
     },
 
-    addNode: function () {
-        console.log(getRandomWord());
-        
+    addNode: function (name, nodeId) {
+
         Nodes.insert({
           group: 'nodes',
           data: {
-            id: 'node' + Math.round( Math.random() * 1000000 ),
+            id: nodeId,
             starred : false,
             group : _.random(0,5), // add group
-            name : getRandomWord()
+            name : name
           },
           position: {
             x: Math.random() *800,
@@ -57,13 +56,17 @@ Meteor.methods({
         Edges.remove(edge);
     },
 
-    addEdge : function (source, target) {
+    addEdge : function (sourceId, targetId, name) {
+
+         console.log(sourceId,targetId, name );
+
          Edges.insert({
             group: 'edges',
             data: {
                 id: 'edge' + Math.round( Math.random() * 1000000 ),
-              "source" :source.data.id,
-              "target" :target.data.id
+              "source" :sourceId,
+              "target" :targetId,
+              "name" : name
             }
           });
     },
@@ -120,14 +123,17 @@ Meteor.methods({
         // console.log("init with random data");
 
         for(i = 0; i < 20; i++)
-            Meteor.call("addNode");
+            var name =  getRandomWord();
+            var nodeId =  'node' + Math.round( Math.random() * 1000000 );
+            Meteor.call("addNode", name, nodeId);
 
         // add Edges
         for(i = 0; i < 25; i++){
-          var source = Random.choice(Nodes.find().fetch());
-          var target = Random.choice(Nodes.find({_id:{$ne:source._id}}).fetch());//make sure we dont connect to the source
+            var name =  getRandomWord();
+            var source = Random.choice(Nodes.find().fetch());
+            var target = Random.choice(Nodes.find({_id:{$ne:source._id}}).fetch());//make sure we dont connect to the source
 
-          Meteor.call("addEdge", source, target);
+          Meteor.call("addEdge", source.data.id, target.data.id, name);
 
         }
     },

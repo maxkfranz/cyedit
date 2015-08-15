@@ -39,13 +39,18 @@ Template._header.events = {
     },
 
     // add remove edges
-    // 'click #draw-on' : function(){
-    //       net.edgehandles('drawon');
-    // },
+    'click #draw-edgehandles' : function(){
 
-    // 'click #draw-off : function(){
-    //   net.edgehandles('drawoff');
-    // }
+        // var edgeHandlesOn = Session.get('edgeHandlesOn') == "drawoff" ? "drawon" : "drawoff";
+        
+        // var edgeHandlesOn = Session.get('edgeHandlesOn') == 'disable' ? 'enable' : 'disable';
+        var edgeHandlesOn = Session.get('edgeHandlesOn') ? false : true ;
+        Session.set('edgeHandlesOn', edgeHandlesOn);
+        console.log(edgeHandlesOn);
+        if (edgeHandlesOn)net.edgehandles.start();
+    },
+
+
 
 }
 

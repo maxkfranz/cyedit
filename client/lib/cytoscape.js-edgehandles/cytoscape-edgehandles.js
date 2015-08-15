@@ -4,6 +4,8 @@
   var register = function( $$, $ ){
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
 
+    // console.log(cytoscape);
+
     var defaults = {
       preview: true, // whether to show added edges preview before releasing selection
       handleSize: 10, // the size of the edge handle put on nodes
@@ -135,6 +137,9 @@
           var sourceNode;
           var drawMode = false;
 
+          // $container.cytoscape = cytoscape ;  
+          // console.log($container.cytoscape);
+          
           $container.append( $canvas );
 
           function sizeCanvas(){
@@ -526,7 +531,8 @@
             }
           }
 
-          console.log($container.cytoscape);
+          // console.log($container.cytoscape);
+
           $container.cytoscape(function(e){
             cy = this;
             

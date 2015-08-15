@@ -12,11 +12,12 @@ if( Meteor.isClient ){
 
         addQTip(net);
         addCxtMenu(net);
-        // addEdgehandles(net);
         addDrag(net);
+        addEdgehandles(net);
 
         Tracker.autorun(function(){
             updateNetworkData(net);
+
         });
     };
 }
@@ -145,9 +146,18 @@ function addCxtMenu (net){
 }
 
 // edgehandles
-// function addEdgehandles(net) {
-    
-// };
+function addEdgehandles(net) {
+
+    var onComplete = function( source, target, addedEntities ){
+      console.log(source, target);
+      Meteor.call("addEdge", source.data("id"), target.data("id"));
+    }
+
+    net.edgehandles({
+        complete : onComplete
+    });
+
+};
 
 // drag behaviour
 function addDrag (net) {
