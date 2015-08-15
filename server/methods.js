@@ -34,7 +34,7 @@ Meteor.methods({
 
     },
 
-    addNode: function (name, nodeId) {
+    addNode: function (nodeId, name) {
 
         Nodes.insert({
           group: 'nodes',
@@ -57,9 +57,6 @@ Meteor.methods({
     },
 
     addEdge : function (sourceId, targetId, name) {
-
-         console.log(sourceId,targetId, name );
-
          Edges.insert({
             group: 'edges',
             data: {
@@ -120,21 +117,20 @@ Meteor.methods({
     },
 
     createRandomNetworkData : function(){
-        // console.log("init with random data");
 
-        for(i = 0; i < 20; i++)
+        // add random Nodes
+        for(i = 0; i < 20; i++){
             var name =  getRandomWord();
             var nodeId =  'node' + Math.round( Math.random() * 1000000 );
-            Meteor.call("addNode", name, nodeId);
+            Meteor.call("addNode", nodeId, name);
+        }
 
         // add Edges
         for(i = 0; i < 25; i++){
             var name =  getRandomWord();
             var source = Random.choice(Nodes.find().fetch());
             var target = Random.choice(Nodes.find({_id:{$ne:source._id}}).fetch());//make sure we dont connect to the source
-
-          Meteor.call("addEdge", source.data.id, target.data.id, name);
-
+            Meteor.call("addEdge", source.data.id, target.data.id, name);
         }
     },
 

@@ -2,8 +2,6 @@ net=""; // main object to store a cytoscape graph
 
 if( Meteor.isClient ){
 
-    // Session.setDefault('currentNode', null)
-
     // make sure the div is ready
     Template.network.rendered = function () {
         
@@ -79,8 +77,10 @@ function updateNetworkData(net) {
         var nodes = Nodes.find().fetch();
 
         net.elements().remove(); // make sure evything is clean
-        net.add( nodes );
-        net.add( edges );
+        
+        if(nodes) net.add( nodes );
+        if(edges) net.add( edges );
+        
         net.reset() // render layout
 }
 
@@ -145,7 +145,6 @@ function addCxtMenu (net){
 function addEdgehandles(net) {
 
     var onComplete = function( source, target, addedEntities ){
-      console.log(source, target);
       Meteor.call("addEdge", source.data("id"), target.data("id"));
     }
 

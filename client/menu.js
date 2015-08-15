@@ -1,6 +1,6 @@
 function changeLayout (layoutName) {
 
-    // TODO : make this function smoother maybe
+    // TODO : make this function smoother for multi clients
     var savePositions = function () {
       for (var i = 0; i < net.nodes().length; i++) {
             var node = net.nodes()[i];
@@ -17,15 +17,14 @@ function changeLayout (layoutName) {
 
 Template._header.events = {
     // add/remove nodes
-    "click #add" :  function(){
-      Meteor.call("addNode");
+    "click #add" :  function(){ 
+        var nodeId =  'node' + Math.round( Math.random() * 1000000 );
+
+        Meteor.call("addNode", nodeId, "New Node") 
     },
 
     // add random nodes 
-    "click #init-data": function(){
-      console.log('init');
-      // Meteor.call("resetNetworkData");
-    },
+    "click #init-data": function(){  Meteor.call("resetNetworkData"); },
 
     // layouts
     'click #colaLayout' : function(){ changeLayout("cola") },
