@@ -1,0 +1,17 @@
+<template name="comments">
+    <hr>
+    <ul class="list-unstyled comments-list">
+        {{#each comments}}
+            <li class="panel panel-default">
+                <div class="panel-heading">
+                    <span class="comment-user">That Guy</span>
+                    <time class="text-muted comment-date" datetime="16-12-2014 01:05">Dec 16, 2014</time>
+                    <img class="[ img-circle pull-right ] img-responsive" src="http://www.avatarpro.biz/avatar?s=25" />
+                </div>
+                <div class="panel-body">
+                    {{body}}
+                </div>
+          </li>
+        {{/each}}
+    </ul>
+</template>

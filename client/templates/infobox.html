@@ -1,0 +1,15 @@
+<template name="infobox">
+
+    <h3>
+        {{> xEditable type="text" value=currentSelection.data.name success=onSuccess placement="right" defaultValue="Name"}}
+    </h3>
+
+
+    <ul>
+        <li>{{ currentSelection._id }}</li>
+        <li>{{ currentSelection.data.id }}</li>
+        <li>{{ currentSelection.group }}</li>
+        <li>{{ currentSelection.data.group }}</li>
+    </ul>
+
+</template>

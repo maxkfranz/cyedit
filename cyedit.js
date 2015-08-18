@@ -1,245 +1,191 @@
-var Nodes = new Mongo.Collection("nodes");
-var Edges = new Meteor.Collection("edges");
+net=""; // main object to store a cytoscape graph 
 
+if( Meteor.isClient ){
 
-function initCy(){
+    // make sure the div is ready
+    Template.network.rendered = function () {
+        
+        net = initNetwork();
 
-  cy = cytoscape({
-    container: document.getElementById('cy'),
-    ready: function(){
-      console.log("network ready");
-    },
-    style: [ {
-              selector : 'node',
-                   css: {
-                    'font-size': 12,
-                    'content': 'data(id)',
-                    'text-valign': 'center',
-                    'color': 'white',
-                    'text-outline-width': 2,
-                    'text-outline-color': '#888',
-                    'min-zoomed-font-size': 8
-                    // ,
-                    // 'width': 'mapData(score, 0, 1, 20, 50)',
-                    // 'height': 'mapData(score, 0, 1, 20, 50)'
-                  }
+        addQTip(net);
+        addCxtMenu(net);
+        addDrag(net);
+        addEdgehandles(net);
+
+        Tracker.autorun(function(){
+            updateNetworkData(net);
+        });
+    };
+}
+
+if (Meteor.isServer) {
+    Meteor.startup(function () {
+      // Meteor.call("resetNetworkData"); // reset all nodes and edges
+    });
+}
+
+function initNetwork () {
+
+    var colors = d3.scale.category20b();
+
+    return cytoscape({
+            container: document.getElementById('cy'),
+            ready: function(){
+              console.log("network ready");
+              updateNetworkData(net); // load data when cy is ready
             },
-            {
-              selector: 'edge',
-              css: {
-                'target-arrow-shape': 'triangle'
-              }
-            },
-            // some style for the ext
-            {
-              selector: '.edgehandles-hover',
-              css: {
-                'background-color': 'red'
-              }
-            },
-            {
-              selector: '.edgehandles-source',
-              css: {
-                'border-width': 2,
-                'border-color': 'red'
-              }
-            },
-            {
-              selector: '.edgehandles-target',
-              css: {
-                'border-width': 2,
-                'border-color': 'red'
-              }
-            },
-            {
-              selector: '.edgehandles-preview, .edgehandles-ghost-edge',
-              css: {
-                'line-color': 'red',
-                'target-arrow-color': 'red',
-                'source-arrow-color': 'red'
-              }
-            }
-          ]
-  });
+            // style
+            style: cytoscape.stylesheet()
+            .selector('node')
+                .style({
+                        'content': function( e ){  return e.data("name")},
+                        'background-color': function( e ){ return e.data("starred") ?  "yellow" : colors(e.data("group")) },
+                        'font-size': 12,
+                        'text-valign': 'center',
+                        'color': 'white',
+                        'text-outline-width': 2,
+                        'text-outline-color': function( e ){ return e.locked() ?  "red" : "#888" },
+                        'min-zoomed-font-size': 8
+                         // 'width': 'mapData(score, 0, 1, 20, 50)',
+                        // 'height': 'mapData(score, 0, 1, 20, 50)'
+                })
+            .selector('edge')
+                .style({
+                    'content': function( e ){ return e.data("name")? e.data("name") : "";},
+                    'target-arrow-shape': 'triangle',
+                })
+            .selector('.edgehandles-hover')
+                .style({
+                     'background-color': 'red'
+                })
+            .selector('.edgehandles-source')
+            .selector('.edgehandles-target')
+            .selector('.edgehandles-preview, .edgehandles-ghost-edge')
+                .style({
+                    'line-color': 'red',
+                    'target-arrow-color': 'red',
+                    'source-arrow-color': 'red'
+                })
 
+    });
+}
 
-  Tracker.autorun(function(){
-    cy.elements().remove();
+function updateNetworkData(net) {
 
-    cy.add( Nodes.find().fetch() );
-    cy.add( Edges.find().fetch() );
+        // init Data
+        var edges = Edges.find().fetch();
+        var nodes = Nodes.find().fetch();
 
-    cy.reset()
+        net.elements().remove(); // make sure evything is clean
+        
+        if(nodes) net.add( nodes );
+        if(edges) net.add( edges );
+        
+        net.reset() // render layout
+}
 
+function addQTip (net){
     // qtip
-    cy.nodes().qtip({
+    net.nodes().qtip({
           content:  function(){ return this.data('id'); }
     })
+}
 
-    // menu
-    cy.cxtmenu({
+// contextual menu
+function addCxtMenu (net){
+    net.cxtmenu({
         selector: 'node',
         commands: [
           {
-            content: '<span class="fa fa-flash fa-2x"></span>',
+            content: '<span class="fa fa-trash-o fa-2x"></span>',
             select: function(){
-              console.log( this.id() );
+              
+              // remove all connected edges
+              this.neighborhood('edge').forEach(function(el,i) {
+                // console.log(el.id());
+                Meteor.call("deleteEdge",el.id());
+              })
+
+              // remove this node
+              Meteor.call("deleteNode",this.id());
+
+              // remove from graph
+              net.remove( this.neighborhood('edge') )
+              net.remove( this )
             }
           },
           {
             content: '<span class="fa fa-star fa-2x"></span>',
             select: function(){
-              console.log( this.data('name') );
+              Meteor.call("starNode", this.id());
+              this.style({
+                'background-color': 'yellow'
+              })
             }
           },
           {
-            content: 'Text',
+            content:'<span class="fa fa-lock fa-2x"></span>',
             select: function(){
-              console.log( this.position() );
-            }
+              // console.log( this.position() );
+              Meteor.call("lockNode", this.id(), this.position());
+            },
+          },
+          {
+            content:'<span class="fa fa-comments-o fa-2x"></span>',
+            select: function(){
+              Meteor.call("addComment", this.id());
+            },
+            
           }
         ]
       });
-
-        // edgehandles
-        // cy.edgehandles({});
-
-  });
-
-  cy.on('drag', 'node', /*_.debounce(*/function( e ){
-
-    var node = e.cyTarget;
-    var nodeDoc = Nodes.findOne({ "data.id" : node.id() });
-
-    Nodes.update({
-      _id: nodeDoc._id
-    }, {
-      $set: { position: node.position() }
-    });
-  }/*, 100)*/);
-
 }
 
-if( Meteor.isClient ){
+// edgehandles
+function addEdgehandles(net) {
 
-  Meteor.subscribe('nodes');
-  Meteor.subscribe('edges');
-
-
-  $(function(){
-    FastClick.attach( document.body );
-    
-    initCy();
-
-    $('#add').on('click', function(){
-      Meteor.call("addNode");
-    });
-
-    // add random nodes 
-    $('#init').on('click', function(){
-      Meteor.call("destroyCyData");
-      Meteor.call("initCyData");
-    });
-
-      $('#colaLayout').on('click', function(){
-        var layout = cy.makeLayout({ name: 'cola' });
-        layout.run();
-    }); 
-
-      $('#arborLayout').on('click', function(){
-        var layout = cy.makeLayout({ name: 'arbor' });
-        layout.run();
-    });
-
-      $('#randomLayout').on('click', function(){
-        var layout = cy.makeLayout({ name: 'random' });
-        layout.run();
-    });
-
-      $('#circleLayout').on('click', function(){
-        var layout = cy.makeLayout({ name: 'circle' });
-        layout.run();
-    });
-
-      $('#gridLayout').on('click', function(){
-        var layout = cy.makeLayout({ name: 'grid' });
-        layout.run();
-    });
-
-      $('#draw-on').on('click', function(){
-          cy.edgehandles('drawon');
-    });
-
-    $('#draw-off').on('click', function(){
-      cy.edgehandles('drawoff');
-    });
-
-  });
-}
-
-if (Meteor.isServer) {
-  Meteor.startup(function () {
-    // Meteor.call("destroyCyData"); // reset all nodes on startup
-  });
-
-  Meteor.publish('edges', function() {
-    return Edges.find();
-  });
-
-  Meteor.publish('nodes', function() {
-    return Nodes.find();
-  });
-}
-
-
-Meteor.methods({
-    addNode: function () {
-        Nodes.insert({
-          group: 'nodes',
-          data: {
-            id: 'node' + Math.round( Math.random() * 1000000 )
-          },
-          position: {
-            x: Math.random() *800,
-            y: Math.random() *600
-          }
-        });
-    },
-    addEdge : function (source, target) {
-         Edges.insert({
-            group: 'edges',
-            data: {
-              "source" :source.data.id,
-              "target" :target.data.id
-            }
-          });
-    },
-    deleteNode: function (nodeId) {
-        var node = Nodes.findOne(nodeId);
-        Nodes.remove(nodeId);
-    },
-    initCyData : function(){
-
-        for(i = 0; i < 20; i++)
-            Meteor.call("addNode");
-
-        // add Edges
-        for(i = 0; i < 10; i++){
-          var source = Random.choice(Nodes.find().fetch());
-          var target = Random.choice(Nodes.find({_id:{$ne:source._id}}).fetch());//make sure we dont connect to the source
-
-          Meteor.call("addEdge", source, target);
-
-        }
-    },
-    destroyCyData: function() {
-        Nodes.remove({})
-        Edges.remove({})
-        // Nodes.find({}).forEach(function(node){
-        //     Nodes.remove({_id:node._id});
-        // });
-        // Edges.find({}).forEach(function(edge){
-        //     Edges.remove({_id:edge._id});
-        // });
+    var onComplete = function( source, target, addedEntities ){
+      Meteor.call("addEdge", source.data("id"), target.data("id"));
     }
-});
+
+    net.edgehandles({
+        complete : onComplete
+    });
+};
+
+// drag behaviour
+function addDrag (net) {
+
+    net.on('select', 'node', /*_.debounce(*/function( e ){
+        var node = e.cyTarget;
+        Session.set('currentType', "node");
+        Session.set('currentId', node.id());
+        $("#infoBox").css('visibility', 'visible');
+    });
+
+    net.on('select', 'edge', /*_.debounce(*/function( e ){
+        var edge = e.cyTarget;
+        console.log(edge);
+        Session.set('currentType', "edge");
+        Session.set('currentId', edge.id());
+        $("#infoBox").css('visibility', 'visible');
+    });
+
+    net.on('drag', 'node', /*_.debounce(*/function( e ){
+        var node = e.cyTarget;
+        Meteor.call('updateNodePosition', node.id(), node.position());
+    })
+}
+
+// function addClick (net) {
+//     net.on('click', 'node', /*_.debounce(*/function( e ){
+//         var node = e.cyTarget;
+//         Meteor.call('selectNode', node.id());
+//     })
+// }
+
+
+
+
+
+

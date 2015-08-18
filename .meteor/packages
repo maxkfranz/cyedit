@@ -6,10 +6,14 @@
 
 meteor-platform
 insecure
-maxkfranz:cytoscape
 jquery
+maxkfranz:cytoscape
+maxkfranz:cytoscape-qtip
 underscore
 fastclick
-maxkfranz:cytoscape-qtip
 twbs:bootstrap
 fortawesome:fontawesome
+stevezhu:lodash
+d3js:d3
+workman:x-editable-reactive-template
+natestrauser:x-editable-bootstrap

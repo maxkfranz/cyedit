@@ -4,6 +4,8 @@
   var register = function( $$, $ ){
     if( !cytoscape ){ return; } // can't register if cytoscape unspecified
 
+    // console.log(cytoscape);
+
     var defaults = {
       preview: true, // whether to show added edges preview before releasing selection
       handleSize: 10, // the size of the edge handle put on nodes
@@ -50,7 +52,8 @@
     
     $.fn.cytoscapeEdgehandles = function( params ){
       var fn = params;
-      
+
+
       var functions = {
         destroy: function(){
           var $container = $(this);
@@ -134,6 +137,9 @@
           var sourceNode;
           var drawMode = false;
 
+          // $container.cytoscape = cytoscape ;  
+          // console.log($container.cytoscape);
+          
           $container.append( $canvas );
 
           function sizeCanvas(){
@@ -524,6 +530,8 @@
               removePreview( source, target );
             }
           }
+
+          // console.log($container.cytoscape);
 
           $container.cytoscape(function(e){
             cy = this;
@@ -1011,7 +1019,6 @@
 
     $$('core', 'edgehandles', function( options ){
       var cy = this;
-
       return $( cy.container() ).cytoscapeEdgehandles( options );
     });
 
